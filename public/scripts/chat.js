@@ -16,6 +16,26 @@ const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML;
 //Options
 const {username, room} = Qs.parse(location.search, {ignoreQueryPrefix: true})
 
+const autoScroll = () => {
+  const $newestMessage = $messages.lastElementChild;
+  //Get the new message element offset height
+  const newestMessageHeight = $newestMessage.offsetHeight;
+  //Account for margin-bottom
+  const newestMessageBottomMargin = parseInt(getComputedStyle($newestMessage).marginBottom);
+  const newestMessageFullHeight = newestMessageHeight + newestMessageBottomMargin;
+  //Get visible height
+  const visibleHeight = $messages.offsetHeight;
+  //Get containerHeight
+  const containerHeight = $messages.scrollHeight;
+  //Get scroll height from top
+  const scrollOffSet = $messages.scrollTop + visibleHeight;  //visibleHeight==size of grey scrollBar. Adding both tells you distance from top of screen
+  //Check if distance from bottom is 0 before message is send, if not, scroll to bottom
+  //This is in the event user is looking at old records, then he should not automatically scroll to the bottom
+  if(containerHeight - newestMessageFullHeight <=scrollOffSet) {
+    $messages.scrollTop = $messages.scrollHeight;
+  }
+}
+
 socket.on('server-message', (response)=> {
   console.log(response);
   const html = Mustache.render(messageTemplate, {
@@ -24,6 +44,7 @@ socket.on('server-message', (response)=> {
     username: response.username,
   })  
   $messages.insertAdjacentHTML('beforeend', html);
+  autoScroll();
 })
 
 socket.on('location-message', (response)=> {
@@ -34,6 +55,7 @@ socket.on('location-message', (response)=> {
     username: response.username,
   })
   $messages.insertAdjacentHTML('beforeend', html);
+  autoScroll();
 })
 
 socket.on('room-data', ({room, users})=> {
