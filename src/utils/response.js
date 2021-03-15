@@ -1,7 +1,8 @@
-const generateResponse = (message)=> {
+const generateResponse = (message,username)=> {
   return {
     text: message,
-    createdAt: new Date().getTime()
+    createdAt: new Date().getTime(),
+    username
   }
 }
 module.exports = generateResponse;

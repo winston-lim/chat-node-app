@@ -4,26 +4,23 @@ const addUser = ({username, room, id}) => {
   //Clean inputs
   username = username.trim().toLowerCase();
   room = room.trim().toLowerCase();
-
   //Validate 
   if(!username || !room) {
     return {
       error: 'Username and room are required'
     }
   }
-
   //Check if user exists already
-  const userExists = users.find((user)=>user.name===username&&user.room==room);
+  const userExists = users.find((user)=>user.username===username&&user.room==room);
   if(userExists) {
     return {
       error: 'Username is already in use'
     }
   }
-
   //Store user
-  const user = {id, userame, room};
+  const user = {id, username, room};
   users.push(user);
-  return {user};
+  return {user}; //{user:user}
 }
 
 const getUser = (id) => {
